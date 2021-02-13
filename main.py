@@ -5,14 +5,10 @@ of only that year, and the point on the map are the closest ones to the current
 location of the user.
 '''
 import folium
-# import geopy
 import pandas as pd
 from geopy.geocoders import Nominatim
 from geopy.distance import geodesic
 from geopy.extra.rate_limiter import RateLimiter
-# from geopy.exc import GeocoderUnavailable
-from time import  sleep
-import doctest
 
 def get_input() -> list:
     '''
@@ -50,7 +46,7 @@ def process_data(data: str) -> list:
  ['#1 Single', '2006', 'New York City, New York, USA'],\
  ['#15SecondScare', '2015', 'Coventry, West Midlands, England, UK']]
     '''
-    data = read_file('locations_small.list') #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    data = read_file('locations.list')
     database = []
 
     for line in data:
@@ -70,7 +66,7 @@ def process_data(data: str) -> list:
         place = line.split('\t')[-1]
         if '(' in place:
             place = line.split('\t')[-2]
-        
+
         if '\n' in place:
             place = place[:-1]
 
@@ -91,8 +87,14 @@ def list_to_df(data: str) -> pd.DataFrame:
     data = process_data(data)
     df = pd.DataFrame(data)
     df = df.rename(columns={0: 'name', 1: 'year', 2: 'location'})
-    # df.to_csv('locations.csv')
     return df
+
+
+def write_to_csv(df: pd.DataFrame) -> None:
+    '''
+    Write DataFrame to locations.csv file.
+    '''
+    df.to_csv('locations.csv')
 
 
 def sort_by_year(values: list) -> pd.DataFrame:
@@ -102,7 +104,7 @@ def sort_by_year(values: list) -> pd.DataFrame:
                  name  year                   location
     5  #2WheelzNHeelz  2017  Nashville, Tennessee, USA
     '''
-    df = list_to_df('locations_small.list') # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    df = list_to_df('locations.list')
     year = values[0]
     df = df[df['year'] == year]
     return df
@@ -144,8 +146,11 @@ def find_distances(values: list, df: pd.DataFrame) -> pd.DataFrame:
     distances = []
 
     for coord in film_coords:
-        if coord != None:
+        if coord is not None:
             distance = geodesic(user_coords, coord).km
+            distances.append(distance)
+        else:
+            distance = None
             distances.append(distance)
 
     df['distance'] = distances
@@ -165,6 +170,7 @@ def sort_by_distance(df: pd.DataFrame) -> pd.DataFrame:
     Name: distance, dtype: float64
     '''
     df = df.sort_values(by = ['distance'], kind = 'quicksort')
+    df = df.dropna()
     return df[:10]
 
 
@@ -197,7 +203,7 @@ def build_map(user_location: list, df: pd.DataFrame) -> pd.DataFrame:
 
     for loc in locations:
         fg_distances.add_child(folium.PolyLine([user_coords, loc],
-                                               color = 'cadetblue', 
+                                               color = 'cadetblue',
                                                weight=5,
                                                opacity=0.7))
 
@@ -208,37 +214,23 @@ def build_map(user_location: list, df: pd.DataFrame) -> pd.DataFrame:
     map.save('map.html')
 
 
-
-
-values = ['2000', '49.83826', '24.02324']
-df = find_distances(values, find_coordinates(sort_by_year(['2017'])))
-df = sort_by_distance(df)
-build_map(values, df)
-
-
-
-
-
-
-
-
-
-
-
-
-def main(user_input):
+def main():
     '''
     Main function that calls other functions and runs the program.
     '''
-    pass
+    user_input = get_input() # year, lon, lat
+    print('Processing data...')
+    sorted_by_year = sort_by_year(user_input)
+    print('Please wait...')
+    found_coords = find_coordinates(sorted_by_year)
+    print('A few more seconds...')
+    found_distances = find_distances(user_input, found_coords)
+    print('Almost done...')
+    sorted_by_distance = sort_by_distance(found_distances)
+    print('Generating map...')
+    build_map(user_input, sorted_by_distance)
+    print('Finished. Please have look at the map file: map.html')
 
-# doctest.testmod()
 
-# if __name__ == '__main__':
-#     user_input = get_input()
-#     main(user_input)
-#     print('Map is generating...')
-#     sleep(2)
-#     print('Please wait...')
-#     year = 0
-#     print(f'Finished. Please have look at the map {year}_movies_map.html')
+if __name__ == '__main__':
+    main()
