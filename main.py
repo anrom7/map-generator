@@ -5,7 +5,6 @@ of only that year, and the point on the map are the closest ones to the current
 location of the user.
 '''
 import folium
-import haversine
 # import geopy
 import pandas as pd
 from geopy.geocoders import Nominatim
@@ -109,7 +108,6 @@ def sort_by_year(values: list) -> pd.DataFrame:
     return df
 
 
-
 def find_coordinates(df: pd.DataFrame) -> pd.DataFrame:
     '''
     Add all location names as coordinates to new column is df.
@@ -170,21 +168,52 @@ def sort_by_distance(df: pd.DataFrame) -> pd.DataFrame:
     return df[:10]
 
 
-def build_map(user_coords: list, df: pd.DataFrame) -> pd.DataFrame:
+def build_map(user_location: list, df: pd.DataFrame) -> pd.DataFrame:
     '''
-    Build the html map, which consists of 3 layers: labels layer, main layer
-    and user's location.
+    Build the html map, which consists of 3 layers: main layer with user's
+    location, film labels layer and layer for displaying distance.
     '''
-    pass
+    user_coords = [eval(coord) for coord in user_location[1:]]
+    map = folium.Map(location=user_coords, zoom_start=10)
+    fg_user = folium.FeatureGroup(name = 'World map')
+
+    # add main layer and icon with user's coordinates
+    fg_user.add_child(folium.Marker(location = user_coords,
+                                    popup="Your location",
+                                    icon=folium.Icon(color = 'darkred')))
+
+    # add layer with locations of films
+    locations = df['coordinates'][:10]
+    films = df['name'][:10]
+    fg_films = folium.FeatureGroup(name = 'Locations of films')
+
+    for loc, film in zip(locations, films):
+        fg_films.add_child(folium.Marker(location = loc,
+                                         popup = film,
+                                         icon = folium.Icon()))
+
+    # add layer with distances to film locations
+    fg_distances = folium.FeatureGroup(name = 'Distances to film location')
+
+    for loc in locations:
+        fg_distances.add_child(folium.PolyLine([user_coords, loc],
+                                               color = 'cadetblue', 
+                                               weight=5,
+                                               opacity=0.7))
+
+    map.add_child(fg_user)
+    map.add_child(fg_films)
+    map.add_child(fg_distances)
+    map.add_child(folium.LayerControl())
+    map.save('map.html')
 
 
 
 
-
-# values = ['49.83826', '24.02324']
-# df = find_distances(values, find_coordinates(sort_by_year(['2017'])))
-# print(sort_by_distance(df))
-
+values = ['2000', '49.83826', '24.02324']
+df = find_distances(values, find_coordinates(sort_by_year(['2017'])))
+df = sort_by_distance(df)
+build_map(values, df)
 
 
 
