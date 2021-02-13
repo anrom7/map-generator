@@ -90,7 +90,7 @@ def list_to_df(data: str) -> pd.DataFrame:
     return df
 
 
-def write_to_csv(df: pd.DataFrame) -> None:
+def write_to_csv(df: pd.DataFrame):
     '''
     Write DataFrame to locations.csv file.
     '''
@@ -174,7 +174,7 @@ def sort_by_distance(df: pd.DataFrame) -> pd.DataFrame:
     return df[:10]
 
 
-def build_map(user_location: list, df: pd.DataFrame) -> pd.DataFrame:
+def build_map(user_location: list, df: pd.DataFrame):
     '''
     Build the html map, which consists of 3 layers: main layer with user's
     location, film labels layer and layer for displaying distance.
