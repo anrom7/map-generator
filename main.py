@@ -1,7 +1,7 @@
 '''
 This module generates a map with locations where films were filmed. The user
-enters 3 values, which are year, longitute and latitude. The map shows films
-of only that year, and the point on the map are the closest ones to the current
+enters 3 values, which are year, longitute and latitude. The map shows 10 films
+of only that year, locations of which are the closest ones to the current
 location of the user.
 '''
 import folium
@@ -218,7 +218,7 @@ def main():
     '''
     Main function that calls other functions and runs the program.
     '''
-    user_input = get_input() # year, lon, lat
+    user_input = get_input() # year, lat, long
     print('Processing data...')
     sorted_by_year = sort_by_year(user_input)
     print('Please wait...')
