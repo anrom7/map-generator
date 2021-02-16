@@ -18,19 +18,19 @@ after the year being entered, the program asks the user to enter his/her
 coordinates in 'latitude longitude' format.
 For example, user enters this values
 
-![Input](input.jpg?raw=true "User's input")
+![Input](/images/input.jpg?raw=true "User's input")
 
 Then, he/she gots the next output, saying to wait while the map is being
 generated. Messages appear with a delay, defined by the end of the work of the
 functions that are called.
 
-![Output1](output1.jpg?raw=true "Output in command line")
+![Output1](/images/output1.jpg?raw=true "Output in command line")
 
 When all data processing is done and the map is generated, the user is
 welcomed to see the 'map.html' file on his/her directory. After opening it, the
 following map is shown in the web browser.
 
-![Output2](output2.png?raw=true "Generated map screenshot")
+![Output2](/images/output2.png?raw=true "Generated map screenshot")
 
 The program ends its work.
 

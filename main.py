@@ -25,7 +25,7 @@ def get_input() -> list:
 def read_file(path: str) -> list:
     r'''
     Read the file with information on films. Return list of lines.
-    >>> read_file('locations.list')[0]
+    >>> read_file('databases/locations.list')[0]
     '"#1 Single" (2006)\t\t\t\t\tLos Angeles, California, USA\n'
     '''
     with open(path, 'r', encoding = 'utf-8') as data_lines:
@@ -41,12 +41,12 @@ def process_data(data: str) -> list:
     '''
     Process data from file. Form a list, which contains lists with film
     name, year and location.
-    >>> process_data('locations.list')[:3]
+    >>> process_data('databases/locations.list')[:3]
     [['#1 Single', '2006', 'Los Angeles, California, USA'],\
  ['#1 Single', '2006', 'New York City, New York, USA'],\
  ['#15SecondScare', '2015', 'Coventry, West Midlands, England, UK']]
     '''
-    data = read_file('locations.list')
+    data = read_file('databases/locations.list')
     database = []
 
     for line in data:
@@ -80,7 +80,7 @@ def list_to_df(data: str) -> pd.DataFrame:
     '''
     Return a dataframe which contains columns with film name, year and
     location.
-    >>> print(list_to_df('locations.list')[:1])
+    >>> print(list_to_df('databases/locations.list')[:1])
             name  year                      location
     0  #1 Single  2006  Los Angeles, California, USA
     '''
@@ -104,7 +104,7 @@ def sort_by_year(values: list) -> pd.DataFrame:
                  name  year                   location
     5  #2WheelzNHeelz  2017  Nashville, Tennessee, USA
     '''
-    df = list_to_df('locations.list')
+    df = list_to_df('databases/locations.list')
     year = values[0]
     df = df[df['year'] == year]
     return df
