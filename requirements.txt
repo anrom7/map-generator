@@ -1,5 +1,3 @@
 folium
 pandas
-Nominatim from geopy.geocoders
-geodesic from geopy.distance
-RateLimiter from geopy.extra.rate_limiter
+geopy
